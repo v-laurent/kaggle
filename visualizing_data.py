@@ -2,39 +2,26 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import math
+from sklearn.decomposition import PCA
 
+X_train = pd.read_csv("X_train.csv", index_col=0)
+days = ["mon","tue","wed","thu","fri","sat","sun"]
+months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"]
+dates = ["day", "year", "hour", "minute", "second"]
+mail_types = ['multipart/mixed', 'No_mail_type', 'text/html', 'multipart/related', 'multipart/IDM', 'text/HTML', 'multipart/alternative', 'Multipart/Mixed', 'Multipart/Alternative', 'multipart/report', 'text/html ', 'text/calendar', 'multipart/signed', 'Text/Html', 'text/plain']
+other_labels = ["org","tld","ccs","bcced","images","urls","salutations","designation","chars_in_subject","chars_in_body"]
+Y_train = pd.read_csv("Y_train.csv", index_col=0)
 
-"""
-organisations = list(set(X_train["org"]))
-c = []
+#correlation matrix 
+for c in other_labels[2:][::-1]:
+    Y_train.insert(0, c, X_train[c], True) 
 
-for org in organisations:
-    df_mask=X_train['org']== org
-    ds = X_train[df_mask]
-    c.append(len(ds))
-    
-    s = list(set(ds['tld']))
-    if len(s) != 1:
-        print(org,s)
-    
-print(sorted(c))
+fig = plt.figure()
+ax = fig.add_subplot(111)
+cax = ax.matshow(Y_train.corr().to_numpy()[:8,8:], interpolation='nearest')
+fig.colorbar(cax)
 
-frequency = X_train["org"].value_counts()[:100]
-fig, ax = plt.subplots()
-frequency.plot(ax=ax, kind='bar')
+ax.set_xticklabels(['']+['updates','personal','promotions','forums','purchases','travel','spam','social'] )
+ax.set_yticklabels(['']+other_labels[2:])
+plt.title("correlation matrix")
 plt.show()
-
-
-frequency = X_train["urls"].value_counts()
-fig, ax = plt.subplots()
-frequency.plot(ax=ax, kind='bar')
-plt.title("ccs")
-plt.show()
-
-
-Y_train = train_dataset[Y_parameters]
-plt.matshow(Y_train.corr())
-cb = plt.colorbar()
-cb.ax.tick_params(labelsize=14)
-plt.show()
-"""
